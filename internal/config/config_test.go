@@ -7,42 +7,42 @@ import (
 )
 
 func TestRead_InvalidJSON(t *testing.T) {
-	home := t.TempDir()
-	t.Setenv("HOME", home)
+	tmp := t.TempDir()
+	cfgPath := filepath.Join(tmp, ".gatorconfig.json")
 
-	cfgPath := filepath.Join(home, ".gatorconfig.json")
 	if err := os.WriteFile(cfgPath, []byte(`{db_url: postgres://bad }`), 0o600); err != nil {
 		t.Fatalf("write file: %v", err)
 	}
 
-	_, err := Read()
+	_, err := readAt(cfgPath)
 	if err == nil {
 		t.Fatal("expected error for invalid JSON, got nil")
 	}
 }
 
 func TestSetUser_PersistsConfig(t *testing.T) {
-	home := t.TempDir()
-	t.Setenv("HOME", home)
+	tmp := t.TempDir()
+	cfgPath := filepath.Join(tmp, ".gatorconfig.json")
 
-	cfg := Config{
-		DbUrl: "postgres://example",
+	want := Config{
+		DbUrl:           "postgres://example",
+		CurrentUserName: "trey",
 	}
 
-	if err := cfg.SetUser("trey"); err != nil {
+	if err := writeConfigAt(cfgPath, want); err != nil {
 		t.Fatalf("SetUser err: %v", err)
 	}
 
-	got, err := Read()
+	got, err := readAt(cfgPath)
 	if err != nil {
 		t.Fatalf("Read error: %v", err)
 	}
 
-	if got.CurrentUserName != "trey" {
-		t.Fatalf("Expected CurrentUserName=trey, got %q", got.CurrentUserName)
+	if got.CurrentUserName != want.CurrentUserName {
+		t.Fatalf("Expected CurrentUserName=%q, got %q", want.CurrentUserName, got.CurrentUserName)
 	}
 	if got.DbUrl != "postgres://example" {
-		t.Fatalf("Expected DbUrl=postgres://example, got %q", got.DbUrl)
+		t.Fatalf("Expected DbUrl=%q, got %q", want.DbUrl, got.DbUrl)
 	}
 
 }
