@@ -1,0 +1,43 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "db:down",
+      "type": "shell",
+      "command": "if [ -z \"$GATOR_DB_URL\" ] && [ -f .env ]; then set -a; . ./.env; set +a; fi; : \"${GATOR_DB_URL:?GATOR_DB_URL is not set}\"; goose -dir sql/schema postgres \"$GATOR_DB_URL\" down",
+      "group": "test",
+      "problemMatcher": []
+    },
+    {
+      "label": "db:up",
+      "type": "shell",
+      "command": "if [ -z \"$GATOR_DB_URL\" ] && [ -f .env ]; then set -a; . ./.env; set +a; fi; : \"${GATOR_DB_URL:?GATOR_DB_URL is not set}\"; goose -dir sql/schema postgres \"$GATOR_DB_URL\" up",
+      "group": "test",
+      "problemMatcher": []
+    },
+    {
+      "label": "db:reset",
+      "dependsOrder": "sequence",
+      "dependsOn": [
+        "db:down",
+        "db:up"
+      ],
+      "group": "test",
+      "problemMatcher": []
+    },
+    {
+      "label": "db:login",
+      "type": "shell",
+      "command": "if [ -z \"$GATOR_DB_URL\" ] && [ -f .env ]; then set -a; . ./.env; set +a; fi; : \"${GATOR_DB_URL:?GATOR_DB_URL is not set}\"; psql \"$GATOR_DB_URL\"",
+      "group": "test",
+      "problemMatcher": []
+    },
+    {
+      "label": "db:status",
+      "type": "shell",
+      "command": "if [ -z \"$GATOR_DB_URL\" ] && [ -f .env ]; then set -a; . ./.env; set +a; fi; : \"${GATOR_DB_URL:?GATOR_DB_URL is not set}\"; goose -dir sql/schema postgres \"$GATOR_DB_URL\" status",
+      "group": "test",
+      "problemMatcher": []
+    }
+  ]
+}
