@@ -10,3 +10,9 @@ RETURNING *;
 
 -- name: GetUser :one
 SELECT id, created_at, updated_at, name FROM users WHERE name = $1;
+
+-- name: ClearUsers :exec
+DELETE FROM users;
+
+-- name: GetUsers :many
+SELECT name FROM users;

@@ -27,6 +27,7 @@ type commands struct {
 }
 
 func (c *commands) run(s *state, cmd command) error {
+	// fmt.Printf("Attempting to run %s\n", cmd.name)
 	f, exist := c.cmdMap[cmd.name]
 	if !exist {
 		return fmt.Errorf("Command not registered: %s", cmd.name)
@@ -90,14 +91,41 @@ func handlerRegister(s *state, cmd command) error {
 	return nil
 }
 
+func handlerReset(s *state, cmd command) error {
+	if err := s.queries.ClearUsers(context.Background()); err != nil {
+		return fmt.Errorf("Error clearing users from database: %w", err)
+	}
+	fmt.Println("Users cleared from database")
+
+	return nil
+}
+
+func handlerUsers(s *state, cmd command) error {
+	users, err := s.queries.GetUsers(context.Background())
+	if err != nil {
+		return fmt.Errorf("Error querying users: %w", err)
+	}
+
+	if len(users) == 0 {
+		fmt.Println("No users found")
+		return nil
+	}
+
+	for _, u := range users {
+		if u == s.config.CurrentUserName {
+			fmt.Printf("* %s (current)\n", u)
+		} else {
+			fmt.Printf("* %s\n", u)
+		}
+	}
+
+	return nil
+}
+
 func main() {
 	args := os.Args
-	if (len(args) == 2) && (args[1] == "login") {
-		fmt.Fprintln(os.Stderr, "Error: username required")
-		os.Exit(1)
-	}
-	if len(args) < 3 {
-		fmt.Fprintln(os.Stderr, "Error: too few arguments provided")
+	if len(args) < 2 {
+		fmt.Fprintln(os.Stderr, "Error: command required")
 		os.Exit(1)
 	}
 
@@ -135,6 +163,8 @@ func run(cmd command) error {
 	}
 	appCmds.register("login", handlerLogin)
 	appCmds.register("register", handlerRegister)
+	appCmds.register("reset", handlerReset)
+	appCmds.register("users", handlerUsers)
 
 	if err := appCmds.run(&appState, cmd); err != nil {
 		return err
