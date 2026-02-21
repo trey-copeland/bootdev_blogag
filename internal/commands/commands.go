@@ -54,7 +54,10 @@ func (c *Commands) Run(s *State, cmd Command) error {
 	if !exists {
 		return fmt.Errorf("Command not registered: %s", cmd.Name)
 	}
-	return f(s, cmd)
+	if err := f(s, cmd); err != nil {
+		return fmt.Errorf("run command %q: %w", cmd.Name, err)
+	}
+	return nil
 }
 
 func (c *Commands) Register(name string, f HandlerFunc) {
@@ -96,6 +99,10 @@ func RegisterDefault(c *Commands) {
 		{
 			meta:    CommandMeta{Name: "users", Usage: "users", Description: "List all users"},
 			handler: handlerUsers,
+		},
+		{
+			meta:    CommandMeta{Name: "agg", Usage: "agg", Description: "Aggregate feed"},
+			handler: handlerAgg,
 		},
 	}
 

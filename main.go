@@ -2,6 +2,7 @@ package main
 
 import (
 	"database/sql"
+	"errors"
 	"fmt"
 	"os"
 
@@ -35,8 +36,19 @@ func main() {
 	}
 
 	if err := run(cmd); err != nil {
-		fmt.Fprintln(os.Stderr, err)
+		printErrorChain(err)
 		os.Exit(1)
+	}
+}
+
+func printErrorChain(err error) {
+	fmt.Fprintf(os.Stderr, "error: %v\n", err)
+	for depth := 1; ; depth++ {
+		err = errors.Unwrap(err)
+		if err == nil {
+			return
+		}
+		fmt.Fprintf(os.Stderr, "  caused by[%d]: %v\n", depth, err)
 	}
 }
 
