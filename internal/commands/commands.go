@@ -104,6 +104,11 @@ func RegisterDefault(c *Commands) {
 			meta:    CommandMeta{Name: "agg", Usage: "agg", Description: "Aggregate feed"},
 			handler: handlerAgg,
 		},
+
+		{
+			meta:    CommandMeta{Name: "addfeed", Usage: "addfeed", Description: "Add feed for current user"},
+			handler: handlerAddFeed,
+		},
 	}
 
 	for _, command := range allCommands {
