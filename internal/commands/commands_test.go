@@ -36,6 +36,8 @@ type mockQueries struct {
 	createUserFn func(ctx context.Context, arg database.CreateUserParams) (database.User, error)
 	clearUsersFn func(ctx context.Context) error
 	getUsersFn   func(ctx context.Context) ([]string, error)
+	createFeedFn func(ctx context.Context, arg database.CreateFeedParams) (database.Feed, error)
+	getFeedsFn   func(ctx context.Context) ([]database.GetFeedsRow, error)
 }
 
 func (m *mockQueries) GetUser(ctx context.Context, name string) (database.User, error) {
@@ -64,6 +66,20 @@ func (m *mockQueries) GetUsers(ctx context.Context) ([]string, error) {
 		return nil, nil
 	}
 	return m.getUsersFn(ctx)
+}
+
+func (m *mockQueries) CreateFeed(ctx context.Context, arg database.CreateFeedParams) (database.Feed, error) {
+	if m.createFeedFn == nil {
+		return database.Feed{}, errors.New("create feed not mocked")
+	}
+	return m.createFeedFn(ctx, arg)
+}
+
+func (m *mockQueries) GetFeeds(ctx context.Context) ([]database.GetFeedsRow, error) {
+	if m.getFeedsFn == nil {
+		return nil, nil
+	}
+	return m.getFeedsFn(ctx)
 }
 
 func captureStdout(t *testing.T, run func()) string {
@@ -114,7 +130,7 @@ func TestHelpCommandPrintsCommands(t *testing.T) {
 		}
 	})
 
-	for _, commandName := range []string{"help", "login", "register", "reset", "users"} {
+	for _, commandName := range []string{"help", "login", "register", "reset", "users", "agg", "addfeed", "feeds"} {
 		if !strings.Contains(output, commandName) {
 			t.Fatalf("help output missing command %q: %s", commandName, output)
 		}

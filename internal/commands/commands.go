@@ -22,6 +22,8 @@ type QueryStore interface {
 	CreateUser(ctx context.Context, arg database.CreateUserParams) (database.User, error)
 	ClearUsers(ctx context.Context) error
 	GetUsers(ctx context.Context) ([]string, error)
+	CreateFeed(ctx context.Context, arg database.CreateFeedParams) (database.Feed, error)
+	GetFeeds(ctx context.Context) ([]database.GetFeedsRow, error)
 }
 
 type State struct {
@@ -104,10 +106,13 @@ func RegisterDefault(c *Commands) {
 			meta:    CommandMeta{Name: "agg", Usage: "agg", Description: "Aggregate feed"},
 			handler: handlerAgg,
 		},
-
 		{
-			meta:    CommandMeta{Name: "addfeed", Usage: "addfeed", Description: "Add feed for current user"},
+			meta:    CommandMeta{Name: "addfeed", Usage: "addfeed <name> <url>", Description: "Add feed for current user"},
 			handler: handlerAddFeed,
+		},
+		{
+			meta:    CommandMeta{Name: "feeds", Usage: "feeds", Description: "Show all feeds and the user that added them"},
+			handler: handlerFeeds,
 		},
 	}
 
