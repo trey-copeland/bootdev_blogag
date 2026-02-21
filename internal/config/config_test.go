@@ -14,7 +14,7 @@ func TestRead_InvalidJSON(t *testing.T) {
 		t.Fatalf("write file: %v", err)
 	}
 
-	_, err := readAt(cfgPath)
+	_, err := readConfigAt(cfgPath)
 	if err == nil {
 		t.Fatal("expected error for invalid JSON, got nil")
 	}
@@ -33,7 +33,7 @@ func TestSetUser_PersistsConfig(t *testing.T) {
 		t.Fatalf("SetUser err: %v", err)
 	}
 
-	got, err := readAt(cfgPath)
+	got, err := readConfigAt(cfgPath)
 	if err != nil {
 		t.Fatalf("Read error: %v", err)
 	}

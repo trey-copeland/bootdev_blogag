@@ -26,10 +26,10 @@ func Read() (Config, error) {
 		return Config{}, err
 	}
 
-	return readAt(cfgPath)
+	return readConfigAt(cfgPath)
 }
 
-func readAt(cfgPath string) (Config, error) {
+func readConfigAt(cfgPath string) (Config, error) {
 	bytes, err := os.ReadFile(cfgPath)
 	if err != nil {
 		return Config{}, fmt.Errorf("Error reading .gatorconfig: %v", err)

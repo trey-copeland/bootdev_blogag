@@ -10,6 +10,18 @@ import (
 	"github.com/trey.copeland/bootdev_blogag/internal/database"
 )
 
+type configAdapter struct {
+	cfg *config.Config
+}
+
+func (a configAdapter) SetUser(currentUserName string) error {
+	return a.cfg.SetUser(currentUserName)
+}
+
+func (a configAdapter) CurrentUserName() string {
+	return a.cfg.CurrentUserName
+}
+
 func main() {
 	args := os.Args
 	if len(args) < 2 {
@@ -41,7 +53,7 @@ func run(cmd commands.Command) error {
 	dbQueries := database.New(db)
 
 	appState := commands.State{
-		Config:  &cfg,
+		Config:  configAdapter{cfg: &cfg},
 		Queries: dbQueries,
 	}
 
